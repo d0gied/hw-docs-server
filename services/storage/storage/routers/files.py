@@ -3,13 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, UploadFile
 from fastapi.responses import FileResponse
 
-from storage.dependencies import get_storage_service
-from storage.services.storage import StorageService
+from storage.dependencies import StorageServiceDep
 
 
 router = APIRouter(prefix="/files", tags=["files"])
-
-StorageServiceDep = Annotated[StorageService, Depends(get_storage_service)]
 
 
 # @router.get("/")

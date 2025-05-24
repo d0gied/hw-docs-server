@@ -45,3 +45,6 @@ def get_storage_service(
     :return: An instance of StorageService.
     """
     return StorageService(file_storage)
+
+
+StorageServiceDep = Annotated[StorageService, Depends(get_storage_service)]
