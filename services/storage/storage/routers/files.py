@@ -1,0 +1,52 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Response, UploadFile
+from fastapi.responses import FileResponse
+
+from storage.dependencies import get_storage_service
+from storage.services.storage import StorageService
+
+
+router = APIRouter(prefix="/files", tags=["files"])
+
+StorageServiceDep = Annotated[StorageService, Depends(get_storage_service)]
+
+
+# @router.get("/")
+async def list_files(storage_service: StorageServiceDep): ...
+
+
+@router.get(
+    "/{file_id}",
+    responses={
+        200: {"description": "File retrieved successfully"},
+        404: {"description": "File not found"},
+    },
+    response_class=FileResponse,
+)
+async def get_file(file_id: int, storage_service: StorageServiceDep) -> Response:
+    """
+    Retrieve a file by its ID.
+
+    :param file_id: The ID of the file to retrieve.
+    """
+    return await storage_service.download_file_by_file_id(file_id)
+
+
+@router.post(
+    "",
+    responses={
+        200: {"description": "File retrieved successfully"},
+        201: {"description": "File uploaded successfully"},
+        400: {"description": "Invalid file format or size"},
+    },
+    response_model=int,
+)
+async def upload_file(file: UploadFile, storage_service: StorageServiceDep) -> Response:
+    """
+    Upload a file to the storage service.
+
+    :param file: The file to be uploaded.
+    :param storage_service: The storage service dependency.
+    """
+    return await storage_service.upload_file(file)
