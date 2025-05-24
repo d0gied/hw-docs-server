@@ -6,7 +6,6 @@ from fastapi import Response, UploadFile, status
 from fastapi.responses import Response
 from sqlalchemy import select
 
-from storage.config import Config
 from storage.databases.base import Session
 from storage.databases.files import File as DBFile
 
@@ -32,13 +31,14 @@ class StorageService:
 
     file_storage: 'FilesStorage'
 
-    def __init__(self, file_storage: 'FilesStorage') -> None:
+    def __init__(self, file_storage: 'FilesStorage', files_dir: str) -> None:
         self.file_storage = file_storage
+        self.files_dir = files_dir
 
     async def upload_file(self, file: UploadFile) -> Response:
         data = await file.read()
         file_hash = sha256(data)
-        content_path = f"{Config.FilesStorage.FILES_DIR}/{file_hash}"
+        content_path = f"{self.files_dir}/{file_hash}"
 
         async with Session.begin() as session:
             query = await session.execute(

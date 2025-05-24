@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, Response, UploadFile
+from fastapi import APIRouter, Response, UploadFile
 from fastapi.responses import FileResponse
 
 from gateway.dependencies import RouterServiceDep

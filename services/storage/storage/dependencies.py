@@ -9,7 +9,10 @@ from storage.fs.storage import FilesStorage
 from storage.services.storage import StorageService
 
 
-def get_files_storage(config: Config = Depends(Config)) -> FilesStorage:
+ConfigDep = Annotated[Config, Depends(Config)]
+
+
+def get_files_storage(config: ConfigDep) -> FilesStorage:
     """
     Dependency to get the FilesStorage instance.
 
@@ -35,8 +38,11 @@ def get_files_storage(config: Config = Depends(Config)) -> FilesStorage:
     return FilesStorage(driver=driver)
 
 
+FilesStorageDep = Annotated[FilesStorage, Depends(get_files_storage)]
+
+
 def get_storage_service(
-    file_storage: Annotated[FilesStorage, Depends(get_files_storage)],
+    config: ConfigDep, file_storage: FilesStorageDep
 ) -> 'StorageService':
     """
     Dependency to get the StorageService instance.
@@ -44,7 +50,7 @@ def get_storage_service(
     :param file_storage: The FilesStorage instance.
     :return: An instance of StorageService.
     """
-    return StorageService(file_storage)
+    return StorageService(file_storage, files_dir=config.FilesStorage.FILES_DIR)
 
 
 StorageServiceDep = Annotated[StorageService, Depends(get_storage_service)]

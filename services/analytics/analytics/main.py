@@ -2,11 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from httpx import ConnectError, ConnectTimeout
 from loguru import logger
 
-from gateway.exception_handler import connection_error_handler
-from gateway.routers.files import router as files_router
+from analytics.databases.base import create_tables
+from analytics.routers.files import router as files_router
 
 
 @asynccontextmanager
@@ -17,12 +16,14 @@ async def lifespan(app: FastAPI):
     """
 
     logger.info("Starting application lifespan setup.")
+    await create_tables()
+    logger.info("Database tables created successfully.")
     yield
 
 
 app = FastAPI(
-    title="Gateway Service",
-    description="A service that acts as a gateway for internal services.",
+    title="Analytics Service",
+    description="A service for managing file analytics operations.",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -37,9 +38,6 @@ app.add_middleware(
 
 app.include_router(files_router)
 
-# if some services are not available, handle connection errors gracefully
-app.add_exception_handler(ConnectError, connection_error_handler)
-app.add_exception_handler(ConnectTimeout, connection_error_handler)
 
 if __name__ == "__main__":
     import uvicorn

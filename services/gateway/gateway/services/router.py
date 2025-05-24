@@ -1,4 +1,4 @@
-from fastapi import Response, UploadFile, status
+from fastapi import Response, UploadFile
 from fastapi.responses import Response
 from httpx import AsyncClient
 
@@ -9,9 +9,11 @@ class RouterService:
     This class provides methods to upload, download, and delete files.
     """
 
-    def __init__(self, storage_base_url: str, analytics_base_url: str) -> None:
-        self.storage_client = AsyncClient(base_url=storage_base_url)
-        self.analytics_client = AsyncClient(base_url=analytics_base_url)
+    def __init__(
+        self, storage_client: AsyncClient, analytics_client: AsyncClient
+    ) -> None:
+        self.storage_client = storage_client
+        self.analytics_client = analytics_client
 
     async def upload_file(self, file: UploadFile) -> Response:
         """
