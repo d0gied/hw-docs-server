@@ -7,6 +7,7 @@ from loguru import logger
 
 from gateway.exception_handler import connection_error_handler
 from gateway.routers.files import router as files_router
+from gateway.routers.analytics import router as analytics_router
 
 
 @asynccontextmanager
@@ -36,6 +37,7 @@ app.add_middleware(
 )
 
 app.include_router(files_router)
+app.include_router(analytics_router)
 
 # if some services are not available, handle connection errors gracefully
 app.add_exception_handler(ConnectError, connection_error_handler)
@@ -44,4 +46,4 @@ app.add_exception_handler(ConnectTimeout, connection_error_handler)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

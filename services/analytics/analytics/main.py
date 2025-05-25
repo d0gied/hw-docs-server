@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from analytics.databases.base import create_tables
-from analytics.routers.files import router as files_router
+from analytics.routers.analytics import router as files_router
 
 
 @asynccontextmanager

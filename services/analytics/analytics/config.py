@@ -23,3 +23,6 @@ class Config:
 
     class Storage:
         API_URL: str = getenv("STORAGE_API_URL", "http://localhost:8001")
+
+    class Filesystem:
+        BASE_PATH: str = getenv("FILESYSTEM_BASE_PATH", "./.cache/analytics")
