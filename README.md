@@ -38,14 +38,19 @@ Each service is a separate Python package. To set up the development environment
    ```bash
    poetry install
    ```
-4. Run the service:
+4. Setup virtual environment according to the services `config.py` (e.g., `storage/config.py`, `analysis/config.py`, or `gateway/config.py`):
+    - it contains `Configz class with fields, that uses `getenv` to read environment variables.
+    - getenv(`variable_name`, default_value) will read the environment variable `variable_name` or return `default_value` if it is not set.
+    - You can set environment variables in your terminal using `export VARIABLE_NAME=value`.
+
+5. Run the service:
    ```bash
    chmod +x ./run.sh
-    ./run.sh
+   ./run.sh
    ```
-5. Repeat steps 2-4 for each service you want to work on.
+6. Repeat steps 2-5 for each service you want to work on.
 
-6. Use swagger to test the API endpoints:
+7. Use swagger to test the API endpoints:
    - Navigate to `http://localhost:8000/docs` for the gateway service.
    - Navigate to `http://localhost:8001/docs` for the storage service.
    - Navigate to `http://localhost:8002/docs` for the analysis service.
