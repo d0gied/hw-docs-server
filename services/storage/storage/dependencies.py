@@ -1,9 +1,8 @@
 from typing import Annotated
 
-from fastapi import Depends, File
+from fastapi import Depends
 
 from storage.config import Config
-from storage.fs.drivers import FilesystemStorageDriver, S3StorageDriver
 from storage.fs.drivers.base import BaseFileStorageDriver
 from storage.fs.storage import FilesStorage
 from storage.services.storage import StorageService
@@ -12,18 +11,25 @@ from storage.services.storage import StorageService
 ConfigDep = Annotated[Config, Depends(Config)]
 
 
-def get_files_storage(config: ConfigDep) -> FilesStorage:
+def get_files_storage_driver(config: ConfigDep) -> BaseFileStorageDriver:
     """
-    Dependency to get the FilesStorage instance.
+    Dependency to get the BaseFileStorageDriver instance.
 
-    :return: An instance of FilesStorage.
+    :param config: The configuration object.
+    :return: An instance of BaseFileStorageDriver.
     """
-    driver: 'BaseFileStorageDriver'
+
     match config.FilesStorage.BACKEND.lower():
         case 'local':
-            driver = FilesystemStorageDriver(base_path=config.Local.BASE_DIR)
+            from storage.fs.drivers.filesystem import (
+                FilesystemStorageDriver,  # lazy import
+            )
+
+            return FilesystemStorageDriver(base_path=config.Local.BASE_DIR)
         case 's3':
-            driver = S3StorageDriver(
+            from storage.fs.drivers.s3 import S3StorageDriver  # lazy import
+
+            return S3StorageDriver(
                 endpoint_url=config.S3.ENDPOINT_URL,
                 access_key=config.S3.ACCESS_KEY,
                 secret_key=config.S3.SECRET_KEY,
@@ -34,6 +40,16 @@ def get_files_storage(config: ConfigDep) -> FilesStorage:
             raise ValueError(
                 f"Unsupported storage backend: {Config.FilesStorage.BACKEND}"
             )
+
+
+def get_files_storage(
+    driver: Annotated[BaseFileStorageDriver, Depends(get_files_storage_driver)],
+) -> FilesStorage:
+    """
+    Dependency to get the FilesStorage instance.
+
+    :return: An instance of FilesStorage.
+    """
 
     return FilesStorage(driver=driver)
 

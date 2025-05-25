@@ -1,4 +1,9 @@
+from loguru import logger
+
 from .base import BaseFileStorageDriver
+
+
+logger.debug("Loading S3 storage driver module")
 
 
 class S3StorageDriver(BaseFileStorageDriver):

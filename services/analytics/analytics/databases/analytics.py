@@ -1,4 +1,5 @@
 from sqlalchemy import ForeignKey
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import TABLE_ARGS, Base
@@ -18,7 +19,7 @@ class AnalyticsResult(Base):
         index=True,
         doc="ID of the file associated with the analytics result",
     )
-    result: Mapped[str] = mapped_column(
+    result: Mapped[JSONB] = mapped_column(
         nullable=False, doc="The analytics result data in JSON format"
     )
     image_path: Mapped[str] = mapped_column(

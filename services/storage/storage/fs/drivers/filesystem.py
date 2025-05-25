@@ -2,10 +2,14 @@ from pathlib import Path
 from typing import override
 
 import aiofiles
+from loguru import logger
 
 from storage.config import Config
 
 from .base import BaseFileStorageDriver
+
+
+logger.debug("Loading filesystem storage driver module")
 
 
 class FilesystemStorageDriver(BaseFileStorageDriver):
