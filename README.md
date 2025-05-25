@@ -55,3 +55,7 @@ Each service is a separate Python package. To set up the development environment
    - Navigate to `http://localhost:8001/docs` for the storage service.
    - Navigate to `http://localhost:8002/docs` for the analysis service.
 
+## Notes
+
+- Я не нашел WordCloudApi в открытом доступе, поэтому написал небольшой франкенштейн в `analytics/connectors/wordcloud.py`, который работает по документации WordCloudApi, за исключением авторизации через Bearer токен, а не RapidAPI. Поэтому из коробки не работает, но можно легко адаптировать. Весь остальной связанный функционал работает(скачивание файла по пути из аналитики).
+
