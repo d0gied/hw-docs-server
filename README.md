@@ -36,7 +36,7 @@ Each service is a separate Python package. To set up the development environment
 2. Choose a service to work on (e.g., `storage`, `analysis`, or `gateway`).
 3. Install a virtual environment:
    ```bash
-   poetry install
+   poetry install --no-root
    ```
 4. Setup virtual environment according to the services `config.py` (e.g., `storage/config.py`, `analysis/config.py`, or `gateway/config.py`):
     - it contains `Configz class with fields, that uses `getenv` to read environment variables.
