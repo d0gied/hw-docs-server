@@ -1,0 +1,56 @@
+---
+services:
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: antiplug
+      POSTGRES_PASSWORD: antiplug
+      POSTGRES_DB: antiplug
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.cache/postgresql:/var/lib/postgresql/data
+
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: ../../docker/service.Dockerfile
+    environment:
+      STORAGE_SERVICE_URL: http://storage:8000
+      ANALYTICS_SERVICE_URL: http://analytics:8000
+    command: ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    
+  storage:
+    build:
+      context: ./services/storage
+      dockerfile: ../../docker/service.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://antiplug:antiplug@database:5432/antiplug
+      LOCAL_STORAGE_BASE_DIR: /app/data
+    command: ["uvicorn", "storage.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - ./.cache/storage:/app/data
+    ports:
+      - "8001:8000"
+    depends_on:
+      - database
+    
+  analytics:
+    build:
+      context: ./services/analytics
+      dockerfile: ../../docker/service.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://antiplug:antiplug@database:5432/antiplug
+      STORAGE_API_URL: http://storage:8000
+      FILESYSTEM_BASE_PATH: /app/data
+    volumes:
+      - ./.cache/analytics:/app/data
+    command: ["uvicorn", "analytics.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8002:8000"
+    depends_on:
+      - database
